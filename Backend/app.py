@@ -4,7 +4,7 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from sentiment_model import analyze_text  # Import your NLP model function
+from SentimentAnalyser import analyze_text  # Import your NLP model function
 
 # Load environment variables
 load_dotenv()
@@ -28,7 +28,7 @@ def fetch_twitter_comments(tweet_url):
 
         if response.status_code == 200:
             tweets = response.json().get("data", [])
-            return [tweet["text"] for tweet in tweets]  # Extract text only
+            return [tweet["text"] for tweet in tweets]
         elif response.status_code == 429:
             print("Rate limit exceeded. Retrying after 15 seconds...")
             time.sleep(15)
@@ -51,19 +51,24 @@ def analyze_sentiment():
     if isinstance(comments, dict) and "error" in comments:
         return jsonify(comments)
     
-    analyzed_results = [analyze_text(comment) for comment in comments]  # Using your NLP model
-    
+    # Analyze each comment using your model
+    analyzed_results = [analyze_text(comment) for comment in comments]
+
+    # Count sentiment categories
     sentiment_counts = {"positive": 0, "negative": 0, "neutral": 0}
-    
     for result in analyzed_results:
-        sentiment_counts[result] += 1
+        if result in sentiment_counts:
+            sentiment_counts[result] += 1
+        else:
+            sentiment_counts["neutral"] += 1  # fallback
     
     total = len(analyzed_results)
     sentiment_percentages = {
-        "positive": (sentiment_counts["positive"] / total) * 100 if total else 0,
-        "negative": (sentiment_counts["negative"] / total) * 100 if total else 0,
-        "neutral": (sentiment_counts["neutral"] / total) * 100 if total else 0,
-        "comments": comments
+        "positive": round((sentiment_counts["positive"] / total) * 100, 2) if total else 0,
+        "negative": round((sentiment_counts["negative"] / total) * 100, 2) if total else 0,
+        "neutral": round((sentiment_counts["neutral"] / total) * 100, 2) if total else 0,
+        "comments": comments,
+        "classified": analyzed_results
     }
 
     return jsonify(sentiment_percentages)

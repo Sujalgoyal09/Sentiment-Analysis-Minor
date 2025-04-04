@@ -211,126 +211,49 @@ print("Cleaned dataset shape:", df.shape)
 # In[25]:
 
 
-from sklearn.model_selection import  GridSearchCV
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+
 
 
 # In[26]:
 
 
-import pandas as pd
-import re
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
-# Step 1: Load the dataset
-try:
-    df = pd.read_csv('train.csv', encoding='utf-8')  # Try UTF-8 first
-except UnicodeDecodeError:
-    print("UTF-8 decoding failed. Trying 'latin1' encoding...")
-    df = pd.read_csv('train.csv', encoding='latin1')  # Fallback to latin1
-
-# Step 2: Inspect the dataset
-print("Dataset shape:", df.shape)
-print("Column names:", df.columns)
-print(df.head())
-
-# Step 3: Preprocess the text data
-def remove_unnecessary_characters(text):
-    if pd.isna(text):  # Handle NaN or None values
-        return ''
-    text = re.sub(r'<.*?>', '', str(text))  # Remove HTML tags
-    text = re.sub(r'[^a-zA-Z0-9\s]', '', str(text))  # Keep only alphanumeric and spaces
-    text = re.sub(r'\s+', ' ', str(text)).strip()  # Replace multiple spaces with a single space and trim
-    return text
-
-df['clean_text'] = df['text'].apply(remove_unnecessary_characters)
-
-# Step 4: Define X (features) and y (target)
-X = df['clean_text']  # Use the cleaned text as features
-y = df['sentiment']   # Use the 'sentiment' column as the target
-
-# Step 5: Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Step 6: Text Vectorization with trigram support
-vectorizer = TfidfVectorizer(max_features=1500, ngram_range=(1, 3))
-X_train_vectorized = vectorizer.fit_transform(X_train)
-X_test_vectorized = vectorizer.transform(X_test)
-
-# Step 7: Define the Random Forest classifier with expanded hyperparameter search
-param_grid = {'n_estimators': [200, 400, 600], 'max_depth': [15, 25, 35]}
-rf_classifier = RandomForestClassifier(random_state=42)
-grid_search = GridSearchCV(rf_classifier, param_grid, cv=3, n_jobs=-1)
-grid_search.fit(X_train_vectorized, y_train)
-
-# Step 8: Make predictions on the test set using the best estimator from grid search
-best_rf_classifier = grid_search.best_estimator_
-y_pred = best_rf_classifier.predict(X_test_vectorized)
-
-# Step 9: Evaluate the classifier
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred, average='weighted')
-recall = recall_score(y_test, y_pred, average='weighted')
-f1 = f1_score(y_test, y_pred, average='weighted')
-
-print(f'Accuracy: {accuracy:.2f}')
-print(f'Precision: {precision:.2f}')
-print(f'Recall: {recall:.2f}')
-print(f'F1 Score: {f1:.2f}')
 
 
-# In[27]:
+
 
 
 import joblib
-joblib.dump(best_rf_classifier, 'sentiment_model.pkl')
 
-
-# In[ ]:
-
-
-# loaded_model = joblib.load('sentiment_model.pkl')
-
-# new_text = "i hate u"
-
-# new_text_vectorized = vectorizer.transform([new_text])
-
-# predicted_sentiment = loaded_model.predict(new_text_vectorized)
-
-# print(f'Predicted Sentiment: {predicted_sentiment[0]}')
-
-
+# Load model and vectorizer only once when the script is imported
+try:
+    loaded_model = joblib.load('sentiment_model.pkl')
+    vectorizer = joblib.load('tfidf_vectorizer.pkl')
+    print("Model and vectorizer loaded successfully.")
+except Exception as e:
+    print(f"Error loading model or vectorizer: {e}")
+    loaded_model = None
+    vectorizer = None
 
 def analyze_text(text):
-    print("Loading model...")
-    loaded_model = joblib.load('sentiment_model.pkl')
+    if not loaded_model or not vectorizer:
+        return "Model or vectorizer not loaded."
 
-    print("Loading vectorizer...")
     try:
-        vectorizer = joblib.load('tfidf_vectorizer.pkl')
-        print("Vectorizer loaded successfully!")
+        # Clean the input text
+        clean_text = re.sub(r'<.*?>', '', str(text))  # Remove HTML tags
+        clean_text = re.sub(r'[^a-zA-Z0-9\s]', '', clean_text)
+        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
+
+        # Vectorize and predict
+        text_vectorized = vectorizer.transform([clean_text])
+        predicted_sentiment = loaded_model.predict(text_vectorized)
+
+        return predicted_sentiment[0]
     except Exception as e:
-        print(f"Error loading vectorizer: {e}")
-        return "Vectorizer loading failed."
+        print(f"Error analyzing text: {e}")
+        return "neutral"  # Safe fallback
 
-    print(f"Vectorizing text: {text}")
-    try:
-        text_vectorized = vectorizer.transform([text])
-        print("Text successfully vectorized.")
-    except Exception as e:
-        print(f"Error vectorizing text: {e}")
-        return "Vectorization failed."
-
-    print("Predicting sentiment...")
-    predicted_sentiment = loaded_model.predict(text_vectorized)
-
-    print("Prediction complete.")
-    return predicted_sentiment[0]
 
 
 # In[29]:
