@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-// import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import {toast} from "react-hot-toast"
 import { useNavigate } from 'react-router-dom';
 
@@ -50,7 +49,6 @@ const SignupForm = ({setIsLoggedIn}) => {
 
   return (
     <div>
-        {/* student-Instructor tab */}
         <div>
             <button>
                 Student
@@ -61,7 +59,6 @@ const SignupForm = ({setIsLoggedIn}) => {
         </div>
 
         <form onSubmit={submitHandler}>
-        {/* first name and lastName */}
             <div>
                     <label>
                         <p>First Name<sup>*</sup></p>
@@ -87,7 +84,7 @@ const SignupForm = ({setIsLoggedIn}) => {
                         />
                     </label>
             </div>
-            {/* email Add */}
+
             <label>
                     <p>Email Address<sup>*</sup></p>
                     <input
@@ -100,7 +97,6 @@ const SignupForm = ({setIsLoggedIn}) => {
                     />
             </label>
 
-            {/* createPassword and Confirm Password */}
             <div>
                 <label>
                     <p>Create Password<sup>*</sup></p>
@@ -113,9 +109,7 @@ const SignupForm = ({setIsLoggedIn}) => {
                         value={formData.password}
                     />
 
-                    {/* <span onClick={() => setShowPassword((prev) => !prev)}>
-                        {showPassword ? (<AiOutlineEyeInvisible/>) : (<AiOutlineEye/>)}
-                    </span> */}
+                   
                 </label>
 
                 <label>
@@ -128,9 +122,7 @@ const SignupForm = ({setIsLoggedIn}) => {
                         placeholder="Confirm Password"
                         value={formData.confirmPassword}
                     />
-                    {/* <span onClick={() => setShowPassword((prev) => !prev)}>
-                        {showPassword ? (<AiOutlineEyeInvisible/>) : (<AiOutlineEye/>)}
-                    </span> */}
+                    
                 </label>
             </div>
         <button>

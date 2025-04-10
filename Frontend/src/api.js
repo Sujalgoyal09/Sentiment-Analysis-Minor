@@ -1,6 +1,6 @@
-const API_BASE_URL = "http://127.0.0.1:5000"; // Flask backend URL
+const API_BASE_URL = "http://127.0.0.1:5000"; 
 
-// Analyze sentiment for a given tweet URL
+
 export const analyzeSentiment = async (twitterPostUrl) => {
     try {
         const response = await fetch(`${API_BASE_URL}/analyze`, {
@@ -32,7 +32,7 @@ export const analyzeSentiment = async (twitterPostUrl) => {
     }
 };
 
-// Fetch tweets by username (if this route exists in your Flask backend)
+// Fetch tweets by username
 export const fetchUserTweets = async (twitterUsername) => {
     try {
         const response = await fetch(`${API_BASE_URL}/fetch_tweets/${twitterUsername}`);

@@ -1,6 +1,5 @@
-from SentimentAnalyser import analyze_text  # Importing function
+from SentimentAnalyser import analyze_text 
 
-# Test different comments
 test_comments = [
     "I love this! It's amazing! ❤️",
     "This is the worst thing ever. I hate it! 😡",
@@ -9,12 +8,11 @@ test_comments = [
     "Absolutely fantastic, I’m so happy!",
 ]
 
-print("Starting sentiment analysis test...\n")  # Debugging print
+print("Starting sentiment analysis test...\n")  
 
-# Analyze each comment
 for comment in test_comments:
-    print(f"Analyzing comment: {comment}")  # Debugging print
+    print(f"Analyzing comment: {comment}")  
     result = analyze_text(comment)
-    print(f"Result: {result}\n")  # Debugging print
+    print(f"Result: {result}\n")  
 
 print("Sentiment analysis test completed.")

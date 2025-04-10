@@ -17,7 +17,7 @@ const Dashboard = () => {
 
         try {
             const result = await analyzeSentiment(twitterUrl);
-            console.log("Analysis Result:", result); // Debug
+            console.log("Analysis Result:", result); 
             if (result.error) {
                 setError(result.error);
             } else {
@@ -37,7 +37,7 @@ const Dashboard = () => {
 
         try {
             const result = await fetchUserTweets(twitterUserId);
-            console.log("User Tweets:", result); // Debug
+            console.log("User Tweets:", result); 
             if (result.error) {
                 setError(result.error);
             } else {

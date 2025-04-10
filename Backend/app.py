@@ -4,15 +4,13 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-from SentimentAnalyser import analyze_text  # Import your NLP model function
+from SentimentAnalyser import analyze_text
 
-# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# Twitter API Authentication
 BEARER_TOKEN = os.getenv("BEARER_TOKEN")
 
 def fetch_twitter_comments(tweet_url):
@@ -51,16 +49,14 @@ def analyze_sentiment():
     if isinstance(comments, dict) and "error" in comments:
         return jsonify(comments)
     
-    # Analyze each comment using your model
     analyzed_results = [analyze_text(comment) for comment in comments]
 
-    # Count sentiment categories
     sentiment_counts = {"positive": 0, "negative": 0, "neutral": 0}
     for result in analyzed_results:
         if result in sentiment_counts:
             sentiment_counts[result] += 1
         else:
-            sentiment_counts["neutral"] += 1  # fallback
+            sentiment_counts["neutral"] += 1
     
     total = len(analyzed_results)
     sentiment_percentages = {
