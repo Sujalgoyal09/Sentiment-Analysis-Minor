@@ -25,6 +25,9 @@ const Navbar = (props) => {
           <NavLink to="/" className="hover:text-gray-300">Home</NavLink>
         </li>
         <li>
+          <NavLink to="/dashboard" className="hover:text-gray-300">Dashboard</NavLink>
+        </li>
+        <li>
           <NavLink to="/about" className="hover:text-gray-300">About</NavLink>
         </li>
         <li>
